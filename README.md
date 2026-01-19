@@ -26,13 +26,15 @@ GO_BE/
 
 ## Features
 
-- ✅ Clean architecture with separation of concerns
-- ✅ PostgreSQL database integration
-- ✅ RESTful API endpoints
-- ✅ Middleware support (logging, CORS)
+- ✅ Go 1.22+ with clean architecture (handlers → services → repositories)
+- ✅ High-performance RESTful API with net/http
+- ✅ PostgreSQL with connection pooling
+- ✅ Request/response timeouts (15s read, 15s write, 60s idle)
+- ✅ Graceful shutdown with context timeout
+- ✅ Middleware: logging, CORS, request tracking
+- ✅ JSON encoding/decoding for fast serialization
 - ✅ Environment-based configuration
-- ✅ Docker support
-- ✅ Graceful shutdown
+- ✅ Docker containerization
 
 ## Prerequisites
 
@@ -43,21 +45,25 @@ GO_BE/
 ## Setup
 
 1. **Clone and navigate to the project**
+
    ```bash
    cd GO_BE
    ```
 
 2. **Copy environment file**
+
    ```bash
    cp .env.example .env
    ```
 
 3. **Start the database**
+
    ```bash
    docker compose up -d
    ```
 
 4. **Install dependencies**
+
    ```bash
    go mod download
    ```
@@ -69,8 +75,7 @@ GO_BE/
 
 ## API Endpoints
 
-- `GET /health` - Health check endpoint
-- `GET /api/health` - Alternative health check
+- `GET /health` - Health check
 - `GET /api/users?id={id}` - Get user by ID
 - `GET /api/products` - Get all products
 
@@ -81,14 +86,15 @@ See `.env.example` for all available configuration options.
 ## Docker
 
 Build and run with Docker:
+
 ```bash
 docker compose up --build
 ```
 
-## Development
+## Performance
 
-Run with hot reload (requires air or similar tool):
-```bash
-air
-```
-
+- Connection pooling for database efficiency
+- Timeout configurations prevent resource leaks
+- Goroutine-based concurrent request handling
+- Zero-allocation JSON encoding where possible
+- Structured logging with request duration tracking
