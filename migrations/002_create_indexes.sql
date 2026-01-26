@@ -2,7 +2,7 @@
 -- Description: Creates indexes for optimal query performance
 -- Created: 2024-01-02
 
-BEGIN;
+
 
 -- ============================================================================
 -- PRIMARY KEY INDEXES (automatically created, but documenting for reference)
@@ -189,6 +189,5 @@ CREATE INDEX IF NOT EXISTS idx_reviews_approved
     ON product_reviews(product_id, rating, created_at DESC) 
     WHERE is_approved = true AND deleted_at IS NULL;
 
-COMMIT;
 
 

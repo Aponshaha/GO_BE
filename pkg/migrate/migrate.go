@@ -14,17 +14,17 @@ import (
 
 // MigrationRunner handles database migrations
 type MigrationRunner struct {
-	db     *sql.DB
-	dir    string
-	table  string
+	db    *sql.DB
+	dir   string
+	table string
 }
 
 // NewMigrationRunner creates a new migration runner
 func NewMigrationRunner(db *sql.DB, migrationsDir string) *MigrationRunner {
 	return &MigrationRunner{
-		db:     db,
-		dir:    migrationsDir,
-		table:  "schema_migrations",
+		db:    db,
+		dir:   migrationsDir,
+		table: "schema_migrations",
 	}
 }
 
@@ -93,7 +93,7 @@ func (m *MigrationRunner) GetMigrationFiles() ([]string, error) {
 // RunMigration executes a single migration file
 func (m *MigrationRunner) RunMigration(filename string) error {
 	filepath := filepath.Join(m.dir, filename)
-	
+
 	// Read migration file
 	content, err := os.ReadFile(filepath)
 	if err != nil {
@@ -155,7 +155,7 @@ func (m *MigrationRunner) Up() error {
 	// Run pending migrations
 	for _, file := range files {
 		version := strings.Split(file, "_")[0]
-		
+
 		if applied[version] {
 			log.Printf("⏭️  Skipping already applied migration: %s", file)
 			continue
@@ -189,7 +189,7 @@ func (m *MigrationRunner) Status() error {
 
 	fmt.Println("\n📊 Migration Status:")
 	fmt.Println(strings.Repeat("-", 60))
-	
+
 	for _, file := range files {
 		version := strings.Split(file, "_")[0]
 		if applied[version] {
@@ -238,7 +238,7 @@ func (m *MigrationRunner) Down() error {
 	}
 
 	version := strings.Split(lastFile, "_")[0]
-	
+
 	// Remove from tracking (actual rollback would require rollback SQL files)
 	query := fmt.Sprintf("DELETE FROM %s WHERE version = $1", m.table)
 	if _, err := m.db.Exec(query, version); err != nil {
@@ -247,7 +247,6 @@ func (m *MigrationRunner) Down() error {
 
 	log.Printf("⚠️  Removed migration record: %s", lastFile)
 	log.Println("⚠️  Note: This only removes the record. Manual rollback may be needed.")
-	
+
 	return nil
 }
-

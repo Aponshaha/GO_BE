@@ -1,8 +1,6 @@
 -- Migration: 001_create_base_tables.sql
 -- Description: Creates base tables for e-commerce/inventory system
--- Created: 2024-01-02
-
-BEGIN;
+-- Created: 2026-01-24  
 
 -- ============================================================================
 -- EXTENSIONS
@@ -10,6 +8,7 @@ BEGIN;
 
 -- Enable UUID extension for generating unique IDs
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- ============================================================================
 -- ENUMS (User-defined types)
@@ -384,5 +383,4 @@ CREATE TRIGGER update_rating_on_review
     FOR EACH ROW
     EXECUTE FUNCTION update_product_rating();
 
-COMMIT;
 

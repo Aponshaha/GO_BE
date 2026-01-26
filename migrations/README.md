@@ -5,7 +5,9 @@ This directory contains SQL migration files for the e-commerce/inventory system.
 ## Migration Files
 
 ### 001_create_base_tables.sql
+
 Creates all base tables with:
+
 - Proper data types (timestamps, decimals, enums)
 - Foreign key constraints
 - Check constraints
@@ -14,7 +16,9 @@ Creates all base tables with:
 - Triggers for rating calculations
 
 ### 002_create_indexes.sql
+
 Creates comprehensive indexes for:
+
 - Foreign keys (faster JOINs)
 - Frequently queried columns
 - Search operations (full-text, trigram)
@@ -23,7 +27,9 @@ Creates comprehensive indexes for:
 - Partial indexes for specific patterns
 
 ### 003_add_extensions.sql
+
 Adds PostgreSQL extensions:
+
 - `pg_trgm` - For fuzzy text search
 - `btree_gin` - For GIN indexes on common types
 
@@ -43,6 +49,7 @@ go run cmd/migrate/main.go -command=down
 ```
 
 The migration runner:
+
 - ✅ Tracks which migrations have been applied
 - ✅ Only runs pending migrations
 - ✅ Uses transactions (safe rollback on error)
@@ -52,7 +59,7 @@ The migration runner:
 
 ```bash
 # Connect to your Docker database
-psql -h localhost -p 5433 -U postgres -d ecom
+psql -h localhost -p 5432 -U postgres -d ecom
 
 # Run migrations in order
 \i migrations/001_create_base_tables.sql
@@ -111,16 +118,16 @@ Indexes speed up queries but slow down writes. We use them strategically:
 SELECT * FROM products WHERE category_id = 5;
 
 -- Fast: Uses idx_products_status_price
-SELECT * FROM products 
-WHERE status = 'active' 
+SELECT * FROM products
+WHERE status = 'active'
 ORDER BY price ASC;
 
 -- Fast: Uses idx_products_name_trgm (trigram)
-SELECT * FROM products 
+SELECT * FROM products
 WHERE name ILIKE '%laptop%';
 
 -- Fast: Uses idx_products_active_only (partial)
-SELECT * FROM products 
+SELECT * FROM products
 WHERE deleted_at IS NULL AND status = 'active';
 ```
 
@@ -137,7 +144,7 @@ For production, always create rollback migrations:
 
 ```sql
 -- Check index usage
-SELECT 
+SELECT
     schemaname,
     tablename,
     indexname,
@@ -146,7 +153,7 @@ FROM pg_stat_user_indexes
 ORDER BY idx_scan DESC;
 
 -- Find unused indexes
-SELECT 
+SELECT
     schemaname,
     tablename,
     indexname,
@@ -155,4 +162,3 @@ FROM pg_stat_user_indexes
 WHERE idx_scan = 0
 AND indexname NOT LIKE 'pg_toast%';
 ```
-
