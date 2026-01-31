@@ -12,7 +12,7 @@ type CategoryResponse struct {
 	Slug        string    `json:"slug"`
 	Description string    `json:"description,omitempty"`
 	ParentID    *int64    `json:"parent_id,omitempty"`
-	ImageURL    string    `json:"image_url,omitempty"`
+	ImageURL    *string   `json:"image_url,omitempty"`
 	IsActive    bool      `json:"is_active"`
 	SortOrder   int       `json:"sort_order"`
 	CreatedAt   time.Time `json:"created_at"`
@@ -39,16 +39,16 @@ type ProductResponse struct {
 	StockQuantity     int        `json:"stock_quantity"`
 	LowStockThreshold int        `json:"low_stock_threshold"`
 	WeightKg          *float64   `json:"weight_kg,omitempty"`
-	DimensionsCm      string     `json:"dimensions_cm,omitempty"`
-	Barcode           string     `json:"barcode,omitempty"`
-	Manufacturer      string     `json:"manufacturer,omitempty"`
-	Brand             string     `json:"brand,omitempty"`
+	DimensionsCm      *string    `json:"dimensions_cm,omitempty"`
+	Barcode           *string    `json:"barcode,omitempty"`
+	Manufacturer      *string    `json:"manufacturer,omitempty"`
+	Brand             *string    `json:"brand,omitempty"`
 	RatingAverage     float64    `json:"rating_average"`
 	RatingCount       int        `json:"rating_count"`
 	ViewCount         int        `json:"view_count"`
 	IsFeautred        bool       `json:"is_featured"`
-	MetaTitle         string     `json:"meta_title,omitempty"`
-	MetaDescription   string     `json:"meta_description,omitempty"`
+	MetaTitle         *string    `json:"meta_title,omitempty"`
+	MetaDescription   *string    `json:"meta_description,omitempty"`
 	CreatedAt         time.Time  `json:"created_at"`
 	UpdatedAt         time.Time  `json:"updated_at"`
 }

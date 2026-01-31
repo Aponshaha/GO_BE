@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"ecom/internal/database"
 	"ecom/internal/models"
 	"ecom/internal/services"
 )
@@ -20,7 +21,7 @@ type Handler struct {
 func NewHandler() *Handler {
 	return &Handler{
 		userService:    services.NewUserService(),
-		productService: services.NewProductService(),
+		productService: services.NewProductService(database.GetDB()),
 	}
 }
 
@@ -60,7 +61,10 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 // GetAllProducts handles GET /api/products
 func (h *Handler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := h.productService.GetAllProducts()
+	page := 1
+	limit := 10
+	
+	products, _, err := h.productService.GetAllProducts(page, limit)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

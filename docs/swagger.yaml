@@ -1,0 +1,793 @@
+openapi: 3.0.0
+info:
+  title: E-commerce API
+  version: 1.0.0
+  description: E-commerce REST API with full CRUD operations
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: Health
+    description: System health endpoints
+  - name: Categories
+    description: Category management
+  - name: Products
+    description: Product management
+  - name: Customers
+    description: Customer management
+  - name: Orders
+    description: Order management
+  - name: Payments
+    description: Payment management
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check if the server is running
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Server is running
+
+  /api/v1/categories:
+    get:
+      tags:
+        - Categories
+      summary: List all categories
+      description: Get paginated list of all categories
+      operationId: getCategories
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryListResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Categories
+      summary: Create category
+      description: Create a new category
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCategoryRequest"
+      responses:
+        "201":
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: Get category by ID
+      description: Retrieve a single category by ID
+      operationId: getCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Category found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryResponse"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Categories
+      summary: Update category
+      description: Update an existing category
+      operationId: updateCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCategoryRequest"
+      responses:
+        "200":
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryResponse"
+        "404":
+          description: Category not found
+    delete:
+      tags:
+        - Categories
+      summary: Delete category
+      description: Delete a category (soft delete)
+      operationId: deleteCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Category deleted
+        "404":
+          description: Category not found
+
+  /api/v1/categories/{id}/products:
+    get:
+      tags:
+        - Categories
+      summary: Get category products
+      description: Get all products in a category
+      operationId: getCategoryProducts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Products in category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+
+  /api/v1/products:
+    get:
+      tags:
+        - Products
+      summary: List all products
+      description: Get paginated list of all products
+      operationId: getProducts
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Products
+      summary: Create product
+      description: Create a new product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      description: Retrieve a single product by ID
+      operationId: getProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Products
+      summary: Update product
+      description: Update an existing product
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductRequest"
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Product not found
+    delete:
+      tags:
+        - Products
+      summary: Delete product
+      description: Delete a product (soft delete)
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Product deleted
+        "404":
+          description: Product not found
+
+  /api/v1/products/category/{category_id}:
+    get:
+      tags:
+        - Products
+      summary: Get products by category
+      description: Get all products in a specific category with pagination
+      operationId: getProductsByCategory
+      parameters:
+        - name: category_id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Products in category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+        "400":
+          description: Bad request
+        "500":
+          description: Server error
+
+components:
+  schemas:
+    CategoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              example: 1
+            name:
+              type: string
+              example: Electronics
+            description:
+              type: string
+              example: Electronic products
+            slug:
+              type: string
+              example: electronics
+            image_url:
+              type: string
+              nullable: true
+            is_active:
+              type: boolean
+              example: true
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+        message:
+          type: string
+          example: Category retrieved successfully
+        timestamp:
+          type: string
+          format: date-time
+
+    CategoryListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              name:
+                type: string
+              slug:
+                type: string
+              is_active:
+                type: boolean
+              created_at:
+                type: string
+                format: date-time
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 50
+            pages:
+              type: integer
+              example: 5
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    CreateCategoryRequest:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          example: Electronics
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          example: electronics
+          minLength: 1
+          maxLength: 100
+          description: URL-friendly identifier (lowercase, hyphens)
+        description:
+          type: string
+          example: Electronic products and gadgets
+          maxLength: 5000
+        parent_id:
+          type: integer
+          format: int64
+          nullable: true
+          example: null
+          description: Parent category ID for nested categories
+        image_url:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: https://example.com/image.jpg
+        is_active:
+          type: boolean
+          example: true
+          default: true
+        sort_order:
+          type: integer
+          example: 0
+          default: 0
+          description: Display order in category list
+
+    ProductResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              example: 1
+            sku:
+              type: string
+              example: PROD-001
+            name:
+              type: string
+              example: Laptop
+            slug:
+              type: string
+              example: laptop
+            description:
+              type: string
+              example: High-performance laptop
+            short_description:
+              type: string
+              example: Powerful computing device
+            category_id:
+              type: integer
+              format: int64
+              example: 1
+            status:
+              type: string
+              enum: [draft, published, archived]
+              example: published
+            price:
+              type: number
+              format: double
+              example: 999.99
+            compare_at_price:
+              type: number
+              format: double
+              nullable: true
+              example: 1299.99
+            cost_price:
+              type: number
+              format: double
+              nullable: true
+              example: 500.00
+            stock_quantity:
+              type: integer
+              example: 100
+            image_url:
+              type: string
+              nullable: true
+              example: https://example.com/image.jpg
+            is_featured:
+              type: boolean
+              example: true
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            deleted_at:
+              type: string
+              format: date-time
+              nullable: true
+        message:
+          type: string
+          example: Product retrieved successfully
+        timestamp:
+          type: string
+          format: date-time
+
+    CreateProductRequest:
+      type: object
+      required:
+        - sku
+        - name
+        - slug
+        - category_id
+        - price
+        - stock_quantity
+      properties:
+        sku:
+          type: string
+          example: PROD-001
+          minLength: 1
+          maxLength: 100
+        name:
+          type: string
+          example: Laptop
+          minLength: 1
+          maxLength: 255
+        slug:
+          type: string
+          example: laptop
+          minLength: 1
+          maxLength: 255
+          description: URL-friendly identifier
+        description:
+          type: string
+          example: High-performance laptop with 16GB RAM
+          maxLength: 5000
+        short_description:
+          type: string
+          example: Powerful computing device
+          maxLength: 500
+        category_id:
+          type: integer
+          format: int64
+          example: 1
+        status:
+          type: string
+          enum: [draft, published, archived]
+          example: published
+          default: draft
+        price:
+          type: number
+          format: double
+          example: 999.99
+          minimum: 0
+        compare_at_price:
+          type: number
+          format: double
+          nullable: true
+          example: 1299.99
+          minimum: 0
+        cost_price:
+          type: number
+          format: double
+          nullable: true
+          example: 500.00
+          minimum: 0
+        stock_quantity:
+          type: integer
+          example: 100
+          minimum: 0
+        image_url:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: https://example.com/image.jpg
+        is_featured:
+          type: boolean
+          example: true
+          default: false
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        sku:
+          type: string
+          example: PROD-001
+          minLength: 1
+          maxLength: 100
+        name:
+          type: string
+          example: Laptop
+          minLength: 1
+          maxLength: 255
+        slug:
+          type: string
+          example: laptop
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          example: High-performance laptop
+          maxLength: 5000
+        short_description:
+          type: string
+          example: Powerful computing device
+          maxLength: 500
+        category_id:
+          type: integer
+          format: int64
+          example: 1
+        status:
+          type: string
+          enum: [draft, published, archived]
+          example: published
+        price:
+          type: number
+          format: double
+          example: 999.99
+          minimum: 0
+        compare_at_price:
+          type: number
+          format: double
+          nullable: true
+          example: 1299.99
+          minimum: 0
+        cost_price:
+          type: number
+          format: double
+          nullable: true
+          example: 500.00
+          minimum: 0
+        stock_quantity:
+          type: integer
+          example: 100
+          minimum: 0
+        image_url:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: https://example.com/image.jpg
+        is_featured:
+          type: boolean
+          example: true
+
+    ProductListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              sku:
+                type: string
+              name:
+                type: string
+              price:
+                type: number
+                format: double
+              stock_quantity:
+                type: integer
+              status:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+        pagination:
+          type: object
+        message:
+          type: string
+        timestamp:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Not found
+        message:
+          type: string
+          example: Category with ID 999 not found
+        timestamp:
+          type: string
+          format: date-time

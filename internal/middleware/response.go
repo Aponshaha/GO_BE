@@ -8,6 +8,38 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ===========================
+// Swagger Documentation Types
+// ===========================
+
+// ApiResponse is the standard API response structure for Swagger
+// @Description Standard API response wrapper
+type ApiResponse struct {
+	Success   bool        `json:"success" example:"true"`
+	Data      interface{} `json:"data"`
+	Message   string      `json:"message" example:"Operation successful"`
+	Timestamp string      `json:"timestamp" example:"2026-01-27T10:30:00Z"`
+}
+
+// ListApiResponse is the standard list response structure for Swagger
+// @Description Paginated list response wrapper
+type ListApiResponse struct {
+	Success    bool        `json:"success" example:"true"`
+	Data       interface{} `json:"data"`
+	Pagination *Pagination `json:"pagination"`
+	Message    string      `json:"message" example:"Retrieved successfully"`
+	Timestamp  string      `json:"timestamp" example:"2026-01-27T10:30:00Z"`
+}
+
+// Pagination represents pagination metadata
+// @Description Pagination information for list responses
+type Pagination struct {
+	Page  int `json:"page" example:"1"`
+	Limit int `json:"limit" example:"10"`
+	Total int `json:"total" example:"100"`
+	Pages int `json:"pages" example:"10"`
+}
+
 // SuccessResponse returns a standardized success response
 func SuccessResponse(c *gin.Context, statusCode int, data interface{}, message string) {
 	response := dto.SuccessResponse{
@@ -20,12 +52,7 @@ func SuccessResponse(c *gin.Context, statusCode int, data interface{}, message s
 }
 
 // ListResponse returns a paginated list response
-func ListResponse(c *gin.Context, data interface{}, page, limit, total int, message string) {
-	pages := (total + limit - 1) / limit // Calculate total pages
-	if pages < 1 {
-		pages = 1
-	}
-
+func ListResponse(c *gin.Context, statusCode int, data interface{}, page, limit, total, pages int, message string) {
 	response := dto.ListResponseData{
 		Success: true,
 		Data:    data,
@@ -38,7 +65,7 @@ func ListResponse(c *gin.Context, data interface{}, page, limit, total int, mess
 		Message:   message,
 		Timestamp: time.Now().UTC().Format(time.RFC3339),
 	}
-	c.JSON(http.StatusOK, response)
+	c.JSON(statusCode, response)
 }
 
 // ErrorResponse returns a standardized error response
@@ -67,8 +94,8 @@ func OK(c *gin.Context, data interface{}, message string) {
 }
 
 // BadRequest returns 400 Bad Request response
-func BadRequest(c *gin.Context, message string) {
-	ErrorResponse(c, http.StatusBadRequest, "Bad Request", message)
+func BadRequest(c *gin.Context, error, message string) {
+	ErrorResponse(c, http.StatusBadRequest, error, message)
 }
 
 // Unauthorized returns 401 Unauthorized response

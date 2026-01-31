@@ -16,8 +16,9 @@ type Config struct {
 
 // ServerConfig holds server-related configuration
 type ServerConfig struct {
-	Port string
-	Host string
+	Port        string
+	Host        string
+	Environment string
 }
 
 // DatabaseConfig holds database-related configuration
@@ -37,8 +38,9 @@ func LoadConfig() (*Config, error) {
 
 	config := &Config{
 		Server: ServerConfig{
-			Port: getEnv("PORT", "8080"),
-			Host: getEnv("HOST", "localhost"),
+			Port:        getEnv("PORT", "8080"),
+			Host:        getEnv("HOST", "localhost"),
+			Environment: getEnv("ENV", "development"),
 		},
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "localhost"),

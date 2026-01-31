@@ -21,20 +21,3 @@ func NewUserService() *UserService {
 func (s *UserService) GetUser(id int) (*models.User, error) {
 	return s.userRepo.GetUserByID(id)
 }
-
-// ProductService handles product-related business logic
-type ProductService struct {
-	productRepo *repositories.ProductRepository
-}
-
-// NewProductService creates a new product service
-func NewProductService() *ProductService {
-	return &ProductService{
-		productRepo: repositories.NewProductRepository(),
-	}
-}
-
-// GetAllProducts retrieves all products
-func (s *ProductService) GetAllProducts() ([]models.Product, error) {
-	return s.productRepo.GetAllProducts()
-}
